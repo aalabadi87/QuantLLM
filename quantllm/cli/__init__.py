@@ -52,32 +52,39 @@ def cmd_version():
 
 def cmd_info():
     """Show system info."""
-    import torch
-    
-    print("\n" + "="*50)
-    print(" QuantLLM System Info ".center(50, "="))
-    print("="*50)
-    
-    # PyTorch
-    print(f"\n📦 PyTorch: {torch.__version__}")
-    
-    # CUDA
-    if torch.cuda.is_available():
-        print(f"🎮 CUDA: {torch.version.cuda}")
-        print(f"   Device: {torch.cuda.get_device_name(0)}")
-        mem_gb = torch.cuda.get_device_properties(0).total_memory / (1024**3)
-        print(f"   Memory: {mem_gb:.1f} GB")
-    else:
-        print("🎮 CUDA: Not available")
-    
-    # Flash Attention
     try:
-        import flash_attn
-        print(f"⚡ Flash Attention: {flash_attn.__version__}")
+        import torch
     except ImportError:
-        print("⚡ Flash Attention: Not installed")
-    
-    print("\n" + "="*50 + "\n")
+        print("\n📦 PyTorch: Not installed")
+        print("🎮 CUDA: Not available")
+    else:
+        print("\n" + "="*50)
+        print(" QuantLLM System Info ".center(50, "="))
+        print("="*50)
+        
+        # PyTorch
+        print(f"\n📦 PyTorch: {torch.__version__}")
+        
+        # CUDA
+        if torch.cuda.is_available():
+            try:
+                print(f"🎮 CUDA: {torch.version.cuda}")
+                print(f"   Device: {torch.cuda.get_device_name(0)}")
+                mem_gb = torch.cuda.get_device_properties(0).total_memory / (1024**3)
+                print(f"   Memory: {mem_gb:.1f} GB")
+            except Exception:
+                print("🎮 CUDA: Available, but failed to query device info")
+        else:
+            print("🎮 CUDA: Not available")
+        
+        # Flash Attention
+        try:
+            import flash_attn
+            print(f"⚡ Flash Attention: {flash_attn.__version__}")
+        except ImportError:
+            print("⚡ Flash Attention: Not installed")
+        
+        print("\n" + "="*50 + "\n")
 
 
 def cmd_convert(model: str, output: str, quant: str):
